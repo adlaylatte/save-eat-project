@@ -8,3 +8,5 @@ html,
 body {
   background-color: lightgray;
 }
+
+ul {list-style: none;}

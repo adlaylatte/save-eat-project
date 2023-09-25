@@ -8,9 +8,11 @@ function EatEditPageHeader() {
 
 export default function EatEditPage() {
     // const { eat_id } = useRouter().query
-    return <div>
-        {/* EatEditPage: {eat_id} */}
-        <EatEditContent />
-    </div>
+    return <PageLayout
+        header={<EatEditPageHeader />}
+        content={<EatEditContent />}
+    />
+    {/* EatEditPage: {eat_id} */ }
+
 
 }
