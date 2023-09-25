@@ -2,7 +2,7 @@ import styles from 'styles/editor.module.css'
 import { PlaceSearchComponent, placeInfo } from './placeSearchComponent'
 import { FoodInfoComponent } from './foodInfoComponent'
 import { Rate, Input } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 //state 인터페이스
 interface State {
@@ -13,9 +13,14 @@ interface State {
     category: string
     rating: number
     comment: string
+    modalOpen: boolean
 }
 
 export function EditorPage() {
+    // useEffect(() => {
+    //     body
+    // }, [])
+
     const [state, setState] = useState<State>({
         title: '',
         placeInfo: {
@@ -32,7 +37,15 @@ export function EditorPage() {
         category: '',
         rating: 0,
         comment: '',
+        modalOpen: false,
     })
+
+    const SetModalOpen = (isOpen: boolean) => {
+        setState({
+            ...state,
+            modalOpen: isOpen,
+        })
+    }
 
     function CreateContainer(element: JSX.Element | undefined, title: string) {
         return (
@@ -69,19 +82,22 @@ export function EditorPage() {
             {CreateContainer(
                 <div className={styles.InputText}>
                     <Input
-                        size="large"
-                        placeholder="Eat 제목을 지어주세요."
+                        size='large'
+                        placeholder='Eat 제목을 지어주세요.'
                         onChange={(e) => onInputChange(e, 'title')}
                     />
                 </div>,
                 'Eat 제목'
             )}
             {CreateContainer(<FoodInfoComponent />, '음식 정보')}
-            <PlaceSearchComponent PlaceSelectCallback={PlaceSelectCallback} />
-            {/* {CreateContainer(
-                <PlaceSearchComponent PlaceSelectCallback={PlaceSelectCallback} />,
-                '가게 검색'
-            )} */}
+            <button onClick={() => setState({ ...state, modalOpen: true })}>버튼</button>
+            {state.modalOpen && (
+                <PlaceSearchComponent
+                    PlaceSelectCallback={PlaceSelectCallback}
+                    SetModalOpen={SetModalOpen}
+                />
+            )}
+
             {CreateContainer(
                 <div className={styles.StarRate}>
                     <Rate
@@ -96,8 +112,8 @@ export function EditorPage() {
             {CreateContainer(
                 <div className={styles.InputText}>
                     <Input
-                        size="large"
-                        placeholder="한줄 평을 적어주세요."
+                        size='large'
+                        placeholder='한줄 평을 적어주세요.'
                         onChange={(e) => onInputChange(e, 'comment')}
                     />
                 </div>,

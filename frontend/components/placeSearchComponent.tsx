@@ -48,6 +48,7 @@ interface State {
 
 interface props {
     PlaceSelectCallback: (info: placeInfo) => void
+    SetModalOpen: (isOpen: boolean) => void
 }
 
 export function PlaceSearchComponent(props: props) {
@@ -63,8 +64,14 @@ export function PlaceSearchComponent(props: props) {
     })
 
     const searchResultCard = useRef<HTMLDivElement>(null)
-    
+
     useEffect(() => {
+        document.body.style.cssText = `
+            position: fixed; 
+            top: -${window.scrollY}px;
+            overflow-y: scroll;
+            width: 100%;`
+
         let container = document.getElementById('map')
         if (!container) return
 
@@ -79,6 +86,12 @@ export function PlaceSearchComponent(props: props) {
             ...state,
             kakaoMap: map,
         })
+
+        return () => {
+            const scrollY = document.body.style.top
+            document.body.style.cssText = ''
+            window.scrollTo(0, parseInt(scrollY || '0', 10) * -1)
+        }
     }, [])
 
     const onSearchButtonClick = (value: string) => {
@@ -195,9 +208,7 @@ export function PlaceSearchComponent(props: props) {
 
         //총 검색결과 나누기 15로 몇 개의 페이지가 존재하는지 계산합니다.
         //webpack config의 상수로 선언되어있습니다.
-        const maxPage = Math.ceil(
-            state.search.pagination.totalCount / MAX_DISPLAYED_SEARCHRESULT
-        )
+        const maxPage = Math.ceil(state.search.pagination.totalCount / MAX_DISPLAYED_SEARCHRESULT)
 
         if (maxPage === 0) {
             return <div>검색 결과가 없습니다.</div>
@@ -218,17 +229,13 @@ export function PlaceSearchComponent(props: props) {
                                     className={styles.Title}
                                     onClick={() => onExpandLabelClick(index)}
                                 >
-                                    <label className={styles.PlaceName}>
-                                        {element.place_name}
-                                    </label>
+                                    <label className={styles.PlaceName}>{element.place_name}</label>
                                     <label className={styles.Expand}>
                                         {state.expandDetailIndex === index ? '접기' : '펼치기'}
                                     </label>
                                 </div>
                                 <div className={styles.Buttons}>
-                                    <button
-                                        onClick={() => onSelectButtonClick(element, index)}
-                                    >
+                                    <button onClick={() => onSelectButtonClick(element, index)}>
                                         선택
                                     </button>
 
@@ -283,32 +290,29 @@ export function PlaceSearchComponent(props: props) {
     }
 
     return (
-        <>
-            <div className={styles.SearchTextContainer}>
-                <Search
-                    placeholder="가게명을 입력해주세요."
-                    onSearch={onSearchButtonClick}
-                    style={{ width: 250 }}
-                />
-                {/* <div className={styles.SearchResultText}>
-                    {state.search
-                        ? '검색결과 : ' + state.search.pagination.totalCount
-                        : null}
-                </div> */}
+        <div className={styles.ModalContainer}>
+            <div className={styles.ModalBody}>
+                <div className={styles.SearchTextContainer}>
+                    <Search
+                        placeholder='가게명을 입력해주세요.'
+                        onSearch={onSearchButtonClick}
+                        style={{ width: 250 }}
+                    />
+                </div>
+                <div className={styles.SearchResultContainer} ref={searchResultCard}>
+                    <ul className={styles.SearchList}>{SearchResultReturn()}</ul>
+                </div>
+                {state.markerPosition ? (
+                    <MarkerComponent
+                        position={state.markerPosition}
+                        markerType={MARKER_TYPE.SEARCH}
+                        kakaoMap={state.kakaoMap!}
+                    />
+                ) : null}
+                <div className={styles.mapContainer}>
+                    <div id='map' className={styles.kakaoMap} />
+                </div>
             </div>
-            <div className={styles.SearchResultContainer} ref={searchResultCard}>
-                <ul className={styles.SearchList}>{SearchResultReturn()}</ul>
-            </div>
-            {state.markerPosition ? (
-                <MarkerComponent
-                    position={state.markerPosition}
-                    markerType={MARKER_TYPE.SEARCH}
-                    kakaoMap={state.kakaoMap!}
-                />
-            ) : null}
-            <div className={styles.mapContainer}>
-                <div id="map" className={styles.kakaoMap} />
-            </div>
-        </>
+        </div>
     )
 }

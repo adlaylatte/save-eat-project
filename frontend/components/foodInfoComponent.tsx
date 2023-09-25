@@ -37,8 +37,7 @@ export function FoodInfoComponent() {
         var tempLoadImage = Array.from(state.LoadImage)
 
         //알람 메시지
-        if (files.length !== filteringFiles.length)
-            alert('이미지파일이 아닌 파일은 필터링됩니다.')
+        if (files.length !== filteringFiles.length) alert('이미지파일이 아닌 파일은 필터링됩니다.')
 
         if (filteringFiles.length > allowedImageAmount) {
             alert('5개를 초과한 이미지는 무시됩니다.')
@@ -114,10 +113,7 @@ export function FoodInfoComponent() {
                             className={[styles.Img, styles.Img_None].join(' ')}
                             ref={imageRef}
                         ></div>
-                        <RightOutlined
-                            className={styles.Button}
-                            onClick={onPageNextButtonClick}
-                        />
+                        <RightOutlined className={styles.Button} onClick={onPageNextButtonClick} />
                     </div>
                     <div className={styles.PaginationContainer}>
                         {state.LoadImage.map((element, index) => {
@@ -170,10 +166,10 @@ export function FoodInfoComponent() {
                 </div>
                 <input
                     ref={inputFileRef}
-                    type="file"
+                    type='file'
                     style={{ display: 'none' }}
                     multiple
-                    accept="image/*"
+                    accept='image/*'
                     onChange={(e) => onFileChange(e)}
                 ></input>
             </div>
@@ -182,7 +178,7 @@ export function FoodInfoComponent() {
                     <label className={styles.Label}>가격</label>
                 </div>
                 <div className={styles.RightContainer}>
-                    <Input placeholder="가격을 입력해주세요." />
+                    <Input placeholder='가격을 입력해주세요.' />
                 </div>
             </div>
             <div className={styles.TagContainer}>
@@ -190,9 +186,7 @@ export function FoodInfoComponent() {
                     <label className={styles.Label}>음식 분류</label>
                 </div>
                 <div className={styles.RightContainer}>
-                    <div className={styles.Tag}>
-                        <EditableTagComponent />
-                    </div>
+                    <div className={styles.Tag}>{/* <EditableTagComponent /> */}</div>
                 </div>
             </div>
         </>
