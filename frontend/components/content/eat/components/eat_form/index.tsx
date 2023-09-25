@@ -5,10 +5,11 @@ import { useEatForm } from './hook'
 import { SearchOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Input, InputNumber } from "antd";
 import { Rating } from 'react-simple-star-rating';
-import { AddImgButtonContainer, InputDetailContainer, InputPhotoContainer, InputPlaceInfoContainer, SubmitButtonContainer } from "./styled";
+import { AddImgButtonContainer, InputDetailContainer, InputDetailWrap, InputPhotoContainer, InputPlaceInfoContainer, InputTitleContainer, SubmitButtonContainer } from "./styled";
 import dayjs from 'dayjs';
 import { EditableTagComponent } from "../EditableTagComponent";
 
+let icon_WH = 30;
 
 type InputTitleProps = {
     onChange(value: string): void
@@ -97,10 +98,10 @@ type InputDetailInfoDateProps = {
 function InputDetailInfoDate(props: InputDetailInfoDateProps) {
     const { date, onChange } = props;
     return (
-        <>
-            <Image src={"/icon/calander.svg"} width={25} height={25} alt={"calander"} />
-            <DatePicker className={"date"} value={dayjs(date)} onChange={(Date) => onChange(Date?.toDate())} placeholder="날짜를 선택하세요." />
-        </>
+        <InputDetailContainer>
+            <Image className="info-icon" src={"/icon/calander.svg"} width={icon_WH} height={icon_WH} alt={"calander"} />
+            <DatePicker inputReadOnly={true} className={"date"} value={dayjs(date)} onChange={(Date) => onChange(Date?.toDate())} placeholder="날짜를 선택하세요." />
+        </InputDetailContainer>
     )
 }
 
@@ -111,10 +112,19 @@ type InputDetailInfoPriceProps = {
 function InputDetailInfoPrice(props: InputDetailInfoPriceProps) {
     const { onChange, value } = props;
     return (
-        <>
-            <Image src={"/icon/price.svg"} width={25} height={25} alt={"price"} />
+        <InputDetailContainer>
+            <Image className="info-icon" src={"/icon/price.svg"} width={icon_WH} height={icon_WH} alt={"price"} />
             <InputNumber className={"price"} value={value} controls={false} placeholder="가격" onChange={(value) => onChange(value)} />
-        </>
+        </InputDetailContainer>
+    )
+}
+
+function InputDetailInfoTag() {
+    return (
+        <InputDetailContainer>
+            <Image className="info-icon" src={"/icon/tag.svg"} width={icon_WH} height={icon_WH} alt={"tag"} />
+            <EditableTagComponent />
+        </InputDetailContainer>
     )
 }
 
@@ -125,10 +135,10 @@ type InputDetailInfoCommentProps = {
 function InputDetailInfoComment(props: InputDetailInfoCommentProps) {
     const { value, onChange } = props;
     return (
-        <>
-            <Image src={"/icon/comment.svg"} width={25} height={25} alt={"comment"} />
+        <InputDetailContainer>
+            <Image className="info-icon" src={"/icon/comment.svg"} width={icon_WH} height={icon_WH} alt={"comment"} />
             <Input className={"comment"} value={value} onChange={(event) => onChange(event.target.value)} placeholder="한줄평" />
-        </>
+        </InputDetailContainer>
     )
 }
 
@@ -197,7 +207,11 @@ export function EatForm(props: EatEditerProps) {
         console.log(price);
 
     }
-    const onChangetag = () => { }
+
+    const onChangetag = (tag: string[]) => {
+
+    }
+
     const onChangecomment = (comment: string) => {
         updateData("comment", comment);
         console.log(comment);
@@ -206,16 +220,19 @@ export function EatForm(props: EatEditerProps) {
 
     return (
         <>
-            <InputTitle onChange={onChangeTitle} value={data.title} />
-            <InputRate onChange={onChange} value={data.rating} />
+            <InputTitleContainer>
+                <InputTitle onChange={onChangeTitle} value={data.title} />
+                <InputRate onChange={onChange} value={data.rating} />
+            </InputTitleContainer>
             <InputPlaceInfo onClick={SearchPlaceInfo} />
             <AddImgButton onClick={AddImg} />
 
-            <InputDetailInfoDate onChange={onChangedate} date={data.date} />
-            <InputDetailInfoPrice onChange={onChangeprice} value={data.price} />
-            <Image src={"/icon/tag.svg"} width={25} height={25} alt={"tag"} />
-            <EditableTagComponent />
-            <InputDetailInfoComment onChange={onChangecomment} value={data.comment} />
+            <InputDetailWrap>
+                <InputDetailInfoDate onChange={onChangedate} date={data.date} />
+                <InputDetailInfoPrice onChange={onChangeprice} value={data.price} />
+                <InputDetailInfoTag /* onChange={} value={data.tag} */ />
+                <InputDetailInfoComment onChange={onChangecomment} value={data.comment} />
+            </InputDetailWrap>
             <SubmitButton onClick={() => props.onSubmit(data)} />
         </>
     )

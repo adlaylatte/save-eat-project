@@ -1,15 +1,12 @@
 import styled from "styled-components";
 
-export const SubmitButtonContainer = styled.div`
-    width: 100%;
+export const InputTitleContainer = styled.div`
+    background-color: #fff;
+    padding: 15px 0;
     display: flex;
+    flex-flow: column;
     align-items: center;
     justify-content: center;
-    margin: 20px 0;
-    .saveBtn {
-        width: 80%;
-        color: #ff6347;
-    }
 `
 
 export const InputPlaceInfoContainer = styled.div`
@@ -51,33 +48,45 @@ export const AddImgButtonContainer = styled.div`
     
 `
 
-export const InputDetailContainer = styled.div`
-    margin: 15px 0 0;
+export const InputPhotoContainer = styled.div``
+
+export const InputDetailWrap = styled.div`
+    padding: 10px;
     background: #fff;
-    li {
-        display: flex;
-        padding: 0 10px;
-        height: 45px;
-        align-items: center;
-        img {
-            margin: 0 5px 0 0;
-        }
-        .date {
-            border: 0;
-            width: 100%;
-        }
-        .price {
-            border: 0;
-            width: 100%;
-        }
-        .comment {
-            border: 0;
-            width: 100%;
-        }
-        &:nth-of-type(3){
-            min-height: 45px;
-            height: auto;
-        }
+`
+export const InputDetailContainer = styled.div`
+    display: flex;
+    /* margin: 15px 0 0; */
+    &+& {
+        padding: 5px 0 0;
+    }
+    /* padding: 5px 0; */
+    .info-icon {
+        margin: 0 5px 0 0;
+    }
+    .date {
+        border: 0;
+        
+    }
+    .price {
+        border: 0;
+        width: 100%;
+    }
+    .comment {
+        border: 0;
+        width: 100%;
     }
 `
-export const InputPhotoContainer = styled.div``
+
+
+export const SubmitButtonContainer = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    .saveBtn {
+        width: 80%;
+        color: #ff6347;
+    }
+`

@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import styled from 'styled-components'
 import BackIcon from '@material-design-icons/svg/round/arrow_back_ios_new.svg'
 import { Button } from "antd"
-
+import { GithubLogo, GithubLogoText } from "@/components/icon";
 
 const PageContainer = styled.div`
 	position: absolute;
@@ -114,4 +114,44 @@ export function NavigationHeader(props: NavigationHeaderProps) {
 		}
 		{...props}
 	/>
+}
+
+const FooterLayoutContainer = styled.footer`
+  /* position: absolute;
+  left: 0;
+  bottom: 0; */
+  border-top: 1px solid #ddd;
+  width: 100%;
+  height: 60px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .left-box {
+	width: 80px;
+	background-color: #fff;
+  }
+  .right-box {
+	.github-logo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+  }
+`;
+export function FooterLayout() {
+	return (
+		<FooterLayoutContainer>
+			<div className="left-box">
+				<h1>로고영역</h1>
+			</div>
+			<div className="right-box">
+				<div className="github-logo">
+					<GithubLogo width={25} height={25} />
+					{/* <Image style={{objectFit:"cover"}} width={33} height={9} src={"/static/img/GitHub_Logo.png"} alt="github-logo" /> */}
+					<GithubLogoText width={50} height={35} />
+				</div>
+			</div>
+		</FooterLayoutContainer>
+	)
 }

@@ -111,7 +111,7 @@ export function EditableTagComponent() {
     // }
 
     return (
-        <Space size={[0, 8]} wrap>
+        <Space style={{ padding: "0 0 0 11px" }} size={[0, 8]} wrap>
             <Space size={[0, 8]} wrap>
                 {state.tags.map((tag, index) => {
                     //더블클릭 시 편집 기능
