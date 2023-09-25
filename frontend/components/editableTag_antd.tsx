@@ -134,7 +134,7 @@ export function EditableTagComponent(props: Props) {
                         {
                             background: token.colorBgContainer,
                             borderStyle: 'dashed',
-                        } && (state.addVisible ? undefined : { display: 'none' })
+                        } && ({ display: state.addVisible ? undefined : 'none' })
                     }
                     onClick={() => {
                         setState({

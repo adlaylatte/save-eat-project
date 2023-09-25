@@ -42,8 +42,8 @@ interface State {
 
     kakaoMap?: kakao.maps.Map
 
-    expandDetailIndex: number
-    selectResultIndex: number
+    expandItemIndex: number
+    selectItemIndex: number
 }
 
 interface props {
@@ -59,8 +59,8 @@ export function PlaceSearchComponent(props: props) {
         search: undefined,
         markerPosition: undefined,
         kakaoMap: undefined,
-        expandDetailIndex: -1,
-        selectResultIndex: -1,
+        expandItemIndex: -1,
+        selectItemIndex: -1,
     })
 
     const searchResultCard = useRef<HTMLDivElement>(null)
@@ -76,7 +76,6 @@ export function PlaceSearchComponent(props: props) {
         if (!container) return
 
         let map = new kakao.maps.Map(container, {
-            //지도의 중심좌표.
             center: new kakao.maps.LatLng(37.511337, 127.012084),
         })
 
@@ -150,19 +149,15 @@ export function PlaceSearchComponent(props: props) {
 
         isNextButton ? pagination.nextPage() : pagination.prevPage()
 
-        searchResultCard.current?.scrollTo({
-            top: 0,
-        })
+        searchResultCard.current?.scrollTo({top: 0,})
     }
 
     const onExpandLabelClick = (index: number) => {
-        var setValue = -1
-        if (state.expandDetailIndex !== index) {
-            setValue = index
-        }
+        var setValue = state.expandItemIndex !== index ? index : -1
+        
         setState({
             ...state,
-            expandDetailIndex: setValue,
+            expandItemIndex: setValue,
         })
     }
 
@@ -195,7 +190,7 @@ export function PlaceSearchComponent(props: props) {
         setState({
             ...state,
             markerPosition: [lat, lng],
-            selectResultIndex: index,
+            selectItemIndex: index,
         })
     }
 
@@ -210,18 +205,25 @@ export function PlaceSearchComponent(props: props) {
         //webpack config의 상수로 선언되어있습니다.
         const maxPage = Math.ceil(state.search.pagination.totalCount / MAX_DISPLAYED_SEARCHRESULT)
 
-        if (maxPage === 0) {
+        if (maxPage === 0) 
             return <div>검색 결과가 없습니다.</div>
-        }
+
+        const pagination = state.search.pagination
+        const prevDisplayStyle = pagination.hasPrevPage ? undefined : 'none'
+        const nextDisplayStyle = pagination.hasNextPage ? undefined : 'none'
 
         return (
             <>
                 {jsonObject.map((element: any, index: number) => {
+                    const { place_name, place_url, category_name, road_address_name, phone } = element
+
+                    const isSelected = state.selectItemIndex === index
+                    const isExpanded = state.expandItemIndex === index
+                    const expandString = isExpanded ? '접기' : '펼치기'
+
                     return (
                         <li
-                            className={`${styles.SearchCard}
-                                ${state.selectResultIndex === index ? styles.Selected : ''}
-                            `}
+                            className={`${styles.SearchCard} ${isSelected ? styles.Selected : ''}`}
                             key={index}
                         >
                             <div className={styles.Top}>
@@ -229,39 +231,28 @@ export function PlaceSearchComponent(props: props) {
                                     className={styles.Title}
                                     onClick={() => onExpandLabelClick(index)}
                                 >
-                                    <label className={styles.PlaceName}>{element.place_name}</label>
-                                    <label className={styles.Expand}>
-                                        {state.expandDetailIndex === index ? '접기' : '펼치기'}
-                                    </label>
+                                    <label className={styles.PlaceName}>{place_name}</label>
+                                    <label className={styles.Expand}>{expandString}</label>
                                 </div>
                                 <div className={styles.Buttons}>
-                                    <button onClick={() => onSelectButtonClick(element, index)}>
-                                        선택
-                                    </button>
-
+                                    <button onClick={() => onSelectButtonClick(element, index)}>선택</button>
                                     <div className={styles.DivideLine} />
-
                                     <button
                                         className={styles.Url}
-                                        onClick={() =>
-                                            window.open(`${element.place_url}`, '_blank')
-                                        }
+                                        onClick={() => window.open(`${place_url}`, '_blank')}
                                     />
                                 </div>
                             </div>
-                            {state.expandDetailIndex === index && (
+                            {isExpanded && (
                                 <div className={styles.Content}>
                                     <label className={styles.Category}>
-                                        {element.category_name.replace('음식점 > ', '')}
+                                        {category_name.replace('음식점 > ', '')}
                                     </label>
                                     <label className={styles.Address}>
-                                        {element.road_address_name}
+                                        {road_address_name}
                                     </label>
                                     <label className={styles.Phone}>
-                                        {'전화번호 : ' +
-                                            (element.phone === ''
-                                                ? '등록되지 않음'
-                                                : element.phone)}
+                                        {`전화번호 : ${phone === '' ? '등록되지 않음': phone}`}
                                     </label>
                                 </div>
                             )}
@@ -270,18 +261,14 @@ export function PlaceSearchComponent(props: props) {
                 })}
                 <div className={styles.Page}>
                     <LeftOutlined
-                        className={
-                            state.search.pagination.hasPrevPage ? undefined : styles.Disabled
-                        }
+                        style={{display:prevDisplayStyle}}
                         onClick={() => onPageClick(false)}
                     />
                     <div className={styles.PageNumber}>
-                        {state.search.pagination.current + ' / ' + maxPage}
+                        {`${pagination.current} / ${maxPage}`}
                     </div>
                     <RightOutlined
-                        className={
-                            state.search.pagination.hasNextPage ? undefined : styles.Disabled
-                        }
+                        style={{display:nextDisplayStyle}}
                         onClick={() => onPageClick(true)}
                     />
                 </div>
@@ -298,6 +285,7 @@ export function PlaceSearchComponent(props: props) {
                         onSearch={onSearchButtonClick}
                         style={{ width: 250 }}
                     />
+                    <button className={styles.CloseButton} onClick={() => props.SetModalOpen(false)}/>
                 </div>
                 <div className={styles.SearchResultContainer} ref={searchResultCard}>
                     <ul className={styles.SearchList}>{SearchResultReturn()}</ul>

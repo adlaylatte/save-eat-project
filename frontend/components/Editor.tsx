@@ -98,7 +98,7 @@ export function EditorPage() {
                 />
             )}
 
-            {CreateContainer(
+            {/* {CreateContainer(
                 <div className={styles.StarRate}>
                     <Rate
                         style={{ fontSize: '50px' }}
@@ -108,8 +108,8 @@ export function EditorPage() {
                     />
                 </div>,
                 '별점'
-            )}
-            {CreateContainer(
+            )} */}
+            {/* {CreateContainer(
                 <div className={styles.InputText}>
                     <Input
                         size='large'
@@ -118,7 +118,7 @@ export function EditorPage() {
                     />
                 </div>,
                 '한줄 평'
-            )}
+            )} */}
             <div className={styles.CompleteButton}>
                 <button>Eat 작성</button>
             </div>
