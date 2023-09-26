@@ -19,7 +19,7 @@ export function EatAddContent() {
     }
 
     const data = {
-        title: "윽엑엑",
+        title: "국밥",
         rating: 2.5,
         placeInfo: {
             code: "",
@@ -34,7 +34,7 @@ export function EatAddContent() {
         date: new Date(),
         price: 9000,
         tag: [],
-        comment: "맛있었윽엑",
+        comment: "맛있네요 냠",
     }
 
     return (

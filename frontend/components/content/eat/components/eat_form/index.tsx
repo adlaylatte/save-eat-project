@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { EatData } from "./hook";
 import { useEatForm } from './hook'
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Input, InputNumber } from "antd";
+import { Button, Carousel, DatePicker, Input, InputNumber } from "antd";
 import { Rating } from 'react-simple-star-rating';
-import { AddImgButtonContainer, InputDetailContainer, InputDetailWrap, InputPhotoContainer, InputPlaceInfoContainer, InputTitleContainer, SubmitButtonContainer } from "./styled";
+import { AddImgButtonContainer, InputDetailContainer, InputDetailWrap, InputPhotoWrap, InputPlaceInfoContainer, InputTitleContainer, SubmitButtonContainer } from "./styled";
 import dayjs from 'dayjs';
 import { EditableTagComponent } from "../EditableTagComponent";
 
@@ -29,6 +29,7 @@ type InputRateProps = {
 function InputRate(props: InputRateProps) {
     return (
         <Rating
+            className="rate"
             allowFraction={true}
             initialValue={props.value}
             onClick={(value) => { props.onChange(value) }}
@@ -67,29 +68,66 @@ function InputPlaceInfo(props: { onClick(): void }) {
 function AddImgButton(props: { onClick(): void }) {
     const { onClick } = props;
     return (
-        <AddImgButtonContainer>
-            <div onClick={onClick} className={"empty"}>
+        <AddImgButtonContainer /* onClick={} */>
+            <div onClick={onClick} className={"add-img-btn"}>
                 <Image src={"/icon/append_img.svg"} width={25} height={25} alt=""></Image>
                 <span>사진을 추가해주세요</span>
             </div>
         </AddImgButtonContainer>
     )
 }
-function InputPhoto() {
+
+// interface temp {
+//     disabled?: boolean
+// }
+
+// function name(props: temp) {
+
+// }
+
+type InputPhotoProps = {
+    AddImg(): void
+}
+function InputPhoto(props: InputPhotoProps) {
+    const [] = useState();
+    const [isAppend, setIsAppend] = useState<boolean>(false);
+    const [imgArr, setImgArr] = useState<string[]>([]);
+
+    React.useEffect(() => {
+        setIsAppend(true);
+        let ImgArr = [
+            "big_cutlet",
+            "compose",
+            "driver_restaurant",
+            "kbbank_gukbab",
+        ]
+        setImgArr(ImgArr);
+    }, []);
+
     return (
-        <InputPhotoContainer>
-        </InputPhotoContainer>
+        <InputPhotoWrap>
+            <div className="input-container">
+                {
+                    isAppend ? (
+                        <Carousel infinite={false} centerMode={true} draggable={true} rootClassName={"img-carousel"} >
+                            {
+                                imgArr.map((item) => {
+                                    return (
+                                        <img className={"appended-img"} src={`/images/${item}.jpg`} alt="" />
+                                    )
+                                })
+                            }
+                            <AddImgButton onClick={props.AddImg} />
+                        </Carousel>
+
+                    ) : (
+                        <AddImgButton onClick={props.AddImg} />
+                    )
+                }
+            </div>
+        </InputPhotoWrap>
     );
 }
-
-interface temp {
-    disabled?: boolean
-}
-
-function name(props: temp) {
-
-}
-
 
 type InputDetailInfoDateProps = {
     onChange(value?: Date): void,
@@ -141,29 +179,6 @@ function InputDetailInfoComment(props: InputDetailInfoCommentProps) {
         </InputDetailContainer>
     )
 }
-
-// function InputDetailInfo() {
-//     return (
-//         <InputDetailContainer>
-//             <li>
-//                 <Image src={"/icon/calander.svg"} width={25} height={25} alt={"calander"} />
-//                 <DatePicker className={"date"} value={ } onChange={onChangeDate} placeholder="날짜를 선택하세요." />
-//             </li>
-//             <li>
-//                 <Image src={"/icon/price.svg"} width={25} height={25} alt={"price"} />
-//                 <InputNumber className={"price"} value={price} controls={false} placeholder="가격" onChange={onChangePrice} />
-//             </li>
-//             <li>
-//                 <Image src={"/icon/tag.svg"} width={25} height={25} alt={"tag"} />
-//                 <EditableTagComponent />
-//             </li>
-//             <li>
-//                 <Image src={"/icon/comment.svg"} width={25} height={25} alt={"comment"} />
-//                 <Input className={"comment"} value={ } onChange={ } placeholder="한줄평" />
-//             </li>
-//         </InputDetailContainer>
-//     );
-// }
 
 function SubmitButton(props: { onClick: () => void }) {
     const { onClick } = props;
@@ -225,7 +240,8 @@ export function EatForm(props: EatEditerProps) {
                 <InputRate onChange={onChange} value={data.rating} />
             </InputTitleContainer>
             <InputPlaceInfo onClick={SearchPlaceInfo} />
-            <AddImgButton onClick={AddImg} />
+            <InputPhoto AddImg={AddImg} />
+            {/* <AddImgButton onClick={AddImg} /> */}
 
             <InputDetailWrap>
                 <InputDetailInfoDate onChange={onChangedate} date={data.date} />

@@ -7,6 +7,16 @@ export const InputTitleContainer = styled.div`
     flex-flow: column;
     align-items: center;
     justify-content: center;
+    .title {
+        width: 320px;
+        /* border: 0; */
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+    }
+    .rate {
+        margin-top: 10px;
+    }
 `
 
 export const InputPlaceInfoContainer = styled.div`
@@ -45,10 +55,80 @@ export const InputPlaceInfoContainer = styled.div`
 `
 
 export const AddImgButtonContainer = styled.div`
-    
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 380px;
+    height: 200px;
+    background: #ddd;
+    border-radius: 5px;
+
+    .add-img-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        background: #ddd;
+        border-radius: 5px;
+        img {
+            display: block;
+        }
+        span {
+            display: block;
+            padding-top: 10px;
+            font-weight: 600;
+        }
+    }
 `
 
-export const InputPhotoContainer = styled.div``
+export const InputPhotoWrap = styled.div`
+    /* width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center; */
+    padding: 15px 0;
+    width: 100%;
+    background-color: #fff;
+    /* height: 260px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .input-container{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .img-carousel {
+            width: 100%;
+            height: 100%;
+            .slick-slider {
+                .slick-list {
+                    overflow: visible;
+                }
+            }
+            .appended-img {
+                width: 100%;
+                height: 200px;
+                padding: 0 5px;
+                object-fit: cover;
+            }
+            .add-img-btn {
+                width: 100%;
+                height: 100%;
+            }
+        }
+        .add-img-btn {
+            width: 100%;
+            height: 100%;
+        }
+    }
+`
 
 export const InputDetailWrap = styled.div`
     padding: 10px;

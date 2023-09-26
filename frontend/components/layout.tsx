@@ -13,10 +13,15 @@ const PageContainer = styled.div`
 	bottom: 0;
 	top: 0;
 	background-color: #f3f3f3;
-	display: flex;
-	flex-direction: column;
+	display: block;
 	max-width: 480px;
+	/* max-width: 840px; */
 	margin: 0 auto;
+	overflow-y: scroll;
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	pointer-events: all;
 `
 
 type LayoutProps = {
@@ -36,20 +41,19 @@ type HeaderContainerProps = {
 	transparent?: boolean
 }
 const HeaderContainer = styled.div<HeaderContainerProps>`
-	height: 48px;
 	background-color: ${props => props.transparent ? 'transparent' : 'white'};
 	position: relative;
-	
+	min-height: 48px;
 	.left {
 		position: absolute;
 		top: 0;
 		left: 0;
 		bottom: 0;
-		padding-left: 4px;
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		
+		padding-left: 4px;
 	}
 
 	.title {
@@ -58,7 +62,6 @@ const HeaderContainer = styled.div<HeaderContainerProps>`
 		left: 0;
 		bottom: 0;
 		right: 0;
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -69,11 +72,11 @@ const HeaderContainer = styled.div<HeaderContainerProps>`
 		top: 0;
 		bottom: 0;
 		right: 0;
-		padding-right: 4px;
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		
+		padding-right: 4px;
 	}
 `
 
