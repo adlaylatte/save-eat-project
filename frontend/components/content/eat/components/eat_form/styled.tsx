@@ -98,6 +98,7 @@ export const InputPhotoWrap = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     .input-container{
         width: 100%;
         height: 100%;
