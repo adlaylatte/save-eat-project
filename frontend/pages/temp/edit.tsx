@@ -1,5 +1,4 @@
 import { EatEditContent } from "@/components/content/eat"
-// import { useRouter } from "next/router"
 import { NavigationHeader, PageLayout } from "@/components/layout";
 
 function EatEditPageHeader() {
@@ -7,12 +6,8 @@ function EatEditPageHeader() {
 }
 
 export default function EatEditPage() {
-    // const { eat_id } = useRouter().query
     return <PageLayout
         header={<EatEditPageHeader />}
         content={<EatEditContent />}
     />
-    {/* EatEditPage: {eat_id} */ }
-
-
 }

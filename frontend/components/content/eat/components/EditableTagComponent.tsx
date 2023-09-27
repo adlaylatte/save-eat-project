@@ -4,42 +4,46 @@ import type { InputRef } from 'antd'
 import { Space, Input, Tag, Tooltip, theme } from 'antd'
 
 //state 인터페이스
-interface State {
+type State = {
     tags: string[]
     inputVisible: boolean
     inputValue: string
-    editInputIndex: number
-    editInputValue: string
+    addVisible: boolean
     inputRef: React.RefObject<InputRef>
     editInputRef: React.RefObject<InputRef>
     newTagName: string
     duplicateTagName: string
 }
 
-export function EditableTagComponent() {
+type Props = {
+    onChange(value: string[] | null): void,
+    value: string[] | null,
+}
+
+export function EditableTagComponent(props: Props) {
     const { token } = theme.useToken()
 
     const [state, setState] = useState<State>({
         tags: [],
         inputVisible: false,
         inputValue: '',
-        editInputIndex: -1,
-        editInputValue: '',
+        addVisible: true,
         inputRef: useRef<InputRef>(null),
         editInputRef: useRef<InputRef>(null),
         newTagName: '',
         duplicateTagName: '',
     })
 
-    const tagInputStyle: React.CSSProperties = {
-        width: 78,
-        verticalAlign: 'top',
-    }
-
-    const tagPlusStyle: React.CSSProperties = {
-        background: token.colorBgContainer,
-        borderStyle: 'dashed',
-    }
+    useEffect(() => {
+        if (props.value) {
+            var addVisible = props.value.length >= 5 ? false : true
+            setState({
+                ...state,
+                tags:props.value,
+                addVisible:addVisible
+            })
+        }
+    }, [])
 
     useEffect(() => {
         if (state.inputVisible) {
@@ -53,19 +57,25 @@ export function EditableTagComponent() {
 
     const handleClose = (removedTag: string) => {
         const newTags = state.tags.filter((tag) => tag !== removedTag)
+        var addVisible = newTags.length >= 5 ? false : true
 
         setState({
             ...state,
             tags: newTags,
+            addVisible: addVisible,
         })
     }
 
     //추가 버튼 눌렀을 때 표시되는 Input에 입력한 값 state 저장
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setState({
-            ...state,
-            inputValue: e.target.value,
-        })
+        var len = e.currentTarget.value.length
+
+        if (len <= 10) {
+            setState({
+                ...state,
+                inputValue: e.target.value,
+            })
+        }
     }
 
     //입력 완료 이후 포커스해제 및 엔터 입력 시
@@ -81,9 +91,14 @@ export function EditableTagComponent() {
             duplicateTagName = state.inputValue
         }
 
+        var addVisible = tags.length >= 5 ? false : true
+
+        props.onChange(tags)
+
         setState({
             ...state,
             tags: tags,
+            addVisible: addVisible,
             newTagName: newTagName,
             duplicateTagName: duplicateTagName,
             inputVisible: false,
@@ -91,45 +106,10 @@ export function EditableTagComponent() {
         })
     }
 
-    //더블클릭 시 편집기능
-    // const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setState({
-    //         ...state,
-    //         editInputValue: e.target.value,
-    //     })
-    // }
-
-    // const handleEditInputConfirm = () => {
-    //     const newTags = [...state.tags]
-    //     newTags[state.editInputIndex] = state.editInputValue
-    //     setState({
-    //         ...state,
-    //         tags: newTags,
-    //         editInputIndex: -1,
-    //         inputValue: '',
-    //     })
-    // }
-
     return (
-        <Space style={{ padding: "0 0 0 11px" }} size={[0, 8]} wrap>
+        <Space size={[0, 8]} wrap>
             <Space size={[0, 8]} wrap>
                 {state.tags.map((tag, index) => {
-                    //더블클릭 시 편집 기능
-                    // if (state.editInputIndex === index) {
-                    //     return (
-                    //         <Input
-                    //             ref={state.editInputRef}
-                    //             key={tag}
-                    //             size="small"
-                    //             style={tagInputStyle}
-                    //             value={state.editInputValue}
-                    //             onChange={handleEditInputChange}
-                    //             onBlur={handleEditInputConfirm}
-                    //             onPressEnter={handleEditInputConfirm}
-                    //         />
-                    //     )
-                    // }
-                    const isLongTag = tag.length > 20
                     const tagElem = (
                         <Tag
                             key={tag}
@@ -137,44 +117,24 @@ export function EditableTagComponent() {
                             style={{ userSelect: 'none' }}
                             onClose={() => handleClose(tag)}
                             color={
-                                index === state.tags.indexOf(state.duplicateTagName)
-                                    ? 'red'
-                                    : // 신규 태그 gold로 강조
-                                    // : index === state.tags.indexOf(state.newTagName)
-                                    // ? 'gold'
-                                    ''
+                                index === state.tags.indexOf(state.duplicateTagName) ? 'red' : ''
                             }
                         >
-                            <span
-                            //더블클릭 시 편집기능
-                            // onDoubleClick={(e) => {
-                            //     setState({
-                            //         ...state,
-                            //         editInputIndex: index,
-                            //         editInputValue: tag,
-                            //     })
-                            //     e.preventDefault()
-                            // }}
-                            >
-                                {isLongTag ? `${tag.slice(0, 10)}...` : tag}
-                            </span>
+                            <span>{tag}</span>
                         </Tag>
                     )
-                    return isLongTag ? (
-                        <Tooltip title={tag} key={tag}>
-                            {tagElem}
-                        </Tooltip>
-                    ) : (
-                        tagElem
-                    )
+                    return tagElem
                 })}
             </Space>
             {state.inputVisible ? (
                 <Input
                     ref={state.inputRef}
-                    type="text"
-                    size="small"
-                    style={tagInputStyle}
+                    type='text'
+                    size='small'
+                    style={{
+                        width: 78,
+                        verticalAlign: 'top',
+                    }}
                     value={state.inputValue}
                     onChange={handleInputChange}
                     onBlur={handleInputConfirm}
@@ -182,7 +142,12 @@ export function EditableTagComponent() {
                 />
             ) : (
                 <Tag
-                    style={tagPlusStyle}
+                    style={
+                        {
+                            background: token.colorBgContainer,
+                            borderStyle: 'dashed',
+                        } && ({ display: state.addVisible ? undefined : 'none' })
+                    }
                     onClick={() => {
                         setState({
                             ...state,

@@ -34,7 +34,7 @@ export const InputPlaceInfoContainer = styled.div`
         align-items: center;
         .map-icon {}
         .place-info {
-            text-align: center;
+            text-align: left;
             .place-name {}
             .place-location {
                 
@@ -98,6 +98,7 @@ export const InputPhotoWrap = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     .input-container{
         width: 100%;
         height: 100%;
