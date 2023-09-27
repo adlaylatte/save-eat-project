@@ -34,7 +34,7 @@ export const InputPlaceInfoContainer = styled.div`
         align-items: center;
         .map-icon {}
         .place-info {
-            text-align: center;
+            text-align: left;
             .place-name {}
             .place-location {
                 

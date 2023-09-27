@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { EatData } from "./hook";
-import { useEatForm } from './hook'
-import { SearchOutlined } from "@ant-design/icons";
+import { EatData, useEatForm } from "./hook";
+import { HeartFilled, SearchOutlined } from "@ant-design/icons";
 import { Button, Carousel, DatePicker, Input, InputNumber } from "antd";
 import { Rating } from 'react-simple-star-rating';
 import { AddImgButtonContainer, InputDetailContainer, InputDetailWrap, InputPhotoWrap, InputPlaceInfoContainer, InputTitleContainer, SubmitButtonContainer } from "./styled";
 import dayjs from 'dayjs';
-import { EditableTagComponent } from "../EditableTagComponent";
+import { EditableTagComponent } from '../editableTagComponent';
+import { KakaoMap } from '@/components/map/kakaomap'
+import { PlaceSearchComponent, PlaceInfo } from '../placeSearchComponent'
 
 let icon_WH = 30;
 
@@ -40,28 +41,87 @@ function InputRate(props: InputRateProps) {
         />
     );
 }
-function InputPlaceInfo(props: { onClick(): void }) {
-    const { onClick } = props;
+
+type InputPlaceInfoProps = {
+    onChange(value: PlaceInfo): void,
+    value: PlaceInfo | null,
+}
+
+type InputPlaceInfoState = {
+    PlaceName:string,
+    PlaceAddress:string
+}
+
+function InputPlaceInfo(props: InputPlaceInfoProps) {
+    const [isModalOpen, setModalOpen] = useState<boolean>(false);
+    const [state, setState] = useState<InputPlaceInfoState>({
+        PlaceName:"가게 이름",
+        PlaceAddress:"가게 주소"
+    });
+    
+    React.useEffect(() => {
+        if(props.value){
+            const {name, address} = props.value
+            if(name != ""){
+                setState({
+                    PlaceName:name,
+                    PlaceAddress:address
+                })
+            }
+        }
+
+        let container = document.getElementById('placeMap')
+        if (!container) return
+
+        let map = new kakao.maps.Map(container, {
+            center: new kakao.maps.LatLng(37.511337, 127.012084),
+        })
+
+        map.setLevel(8)
+
+        // setState({
+        //     ...state,
+        //     kakaoMap: map,
+        // })
+    }, []);
+
+    const onChange = (value:PlaceInfo) => {
+        const {name, address} = value
+
+        props.onChange(value)
+
+        setState({
+            PlaceName:name,
+            PlaceAddress:address
+        })
+    }
+
     return (
-        <InputPlaceInfoContainer>
-            <div className={"left-box"}>
-                <div className={"map-icon"}>
-                    <Image src={"/icon/location.svg"} width={25} height={25} alt={"location"} />
-                </div>
-                <div className={"place-info"}>
-                    <div className={"place-name"}>
-                        <span>가게 이름</span>
+        <KakaoMap>
+            <InputPlaceInfoContainer>
+                <div className={"left-box"}>
+                    <div className={"map-icon"}>
+                        <Image src={"/icon/location.svg"} width={25} height={25} alt={"location"} />
                     </div>
-                    <div className={"place-location"}>
-                        <p>가게 위치</p>
+                    <div className={"place-info"}>
+                        <div className={"place-name"}>
+                            <span>{state.PlaceName}</span>
+                        </div>
+                        <div className={"place-location"}>
+                            <p>{state.PlaceAddress}</p>
+                        </div>
                     </div>
+                    <Button style={{ position: "absolute", top: "10px", right: "10px" }} size="small" onClick={() => setModalOpen(true)} icon={<SearchOutlined />}>검색</Button>
                 </div>
-                <Button style={{ position: "absolute", top: "10px", right: "10px" }} size="small" onClick={onClick} icon={<SearchOutlined />}>검색</Button>
-            </div>
-            <div className={"right-box"}>
-                <Image src={"/images/temp_place.svg"} width={100} height={100} alt="test" />
-            </div>
-        </InputPlaceInfoContainer>
+                <div className={"right-box"}>
+                    <div id='placeMap' style={{width:142,height:80}}/>
+                    {/* <Image src={"/images/temp_place.svg"} width={100} height={100} alt="test" /> */}
+                </div>
+                
+                {isModalOpen && <PlaceSearchComponent SetModalOpen={setModalOpen} onChange={onChange}/>}
+
+            </InputPlaceInfoContainer>
+        </KakaoMap>
     );
 }
 
@@ -77,19 +137,10 @@ function AddImgButton(props: { onClick(): void }) {
     )
 }
 
-// interface temp {
-//     disabled?: boolean
-// }
-
-// function name(props: temp) {
-
-// }
-
 type InputPhotoProps = {
     AddImg(): void
 }
 function InputPhoto(props: InputPhotoProps) {
-    const [] = useState();
     const [isAppend, setIsAppend] = useState<boolean>(false);
     const [imgArr, setImgArr] = useState<string[]>([]);
 
@@ -157,11 +208,16 @@ function InputDetailInfoPrice(props: InputDetailInfoPriceProps) {
     )
 }
 
-function InputDetailInfoTag() {
+type InputDetailInfoTag = {
+    onChange(value: string[] | null): void,
+    value: string[] | null,
+}
+
+function InputDetailInfoTag(props: InputDetailInfoTag) {
     return (
         <InputDetailContainer>
             <Image className="info-icon" src={"/icon/tag.svg"} width={icon_WH} height={icon_WH} alt={"tag"} />
-            <EditableTagComponent />
+            <EditableTagComponent onChange={props.onChange} value={props.value}/>
         </InputDetailContainer>
     )
 }
@@ -193,7 +249,7 @@ type EatEditerProps = {
 }
 
 export function EatForm(props: EatEditerProps) {
-    const { data, updateData } = useEatForm(props.data);
+    const { data, updateData } = useEatForm(props.data);    
 
     const onChangeTitle = (value: string) => {
         updateData("title", value);
@@ -204,33 +260,33 @@ export function EatForm(props: EatEditerProps) {
         updateData("rating", rate);
         console.log(rate);
     }
-
-    const SearchPlaceInfo = () => {
-        alert("검색버튼 클릭!");
-    }
     const AddImg = () => {
         alert("이미지 추가버튼 클릭!");
     }
     // input onChange 이벤트
-    const onChangedate = (date: Date) => {
+    const onChangePlaceInfo = (placeInfo: PlaceInfo) => {
+        updateData("placeInfo", placeInfo);
+        console.log(placeInfo);
+    }
+
+    const onChangeDate = (date: Date) => {
         updateData("date", date);
         console.log(date);
-
     }
-    const onChangeprice = (price: number) => {
+
+    const onChangePrice = (price: number) => {
         updateData("price", price);
         console.log(price);
-
     }
 
-    const onChangetag = (tag: string[]) => {
-
+    const onChangeTag = (tag: string[]) => {
+        updateData("tag", tag);
+        console.log(tag);
     }
 
-    const onChangecomment = (comment: string) => {
+    const onChangeComment = (comment: string) => {
         updateData("comment", comment);
         console.log(comment);
-
     }
 
     return (
@@ -239,15 +295,15 @@ export function EatForm(props: EatEditerProps) {
                 <InputTitle onChange={onChangeTitle} value={data.title} />
                 <InputRate onChange={onChange} value={data.rating} />
             </InputTitleContainer>
-            <InputPlaceInfo onClick={SearchPlaceInfo} />
+            <InputPlaceInfo onChange={onChangePlaceInfo} value={data.placeInfo}/>
             <InputPhoto AddImg={AddImg} />
             {/* <AddImgButton onClick={AddImg} /> */}
 
             <InputDetailWrap>
-                <InputDetailInfoDate onChange={onChangedate} date={data.date} />
-                <InputDetailInfoPrice onChange={onChangeprice} value={data.price} />
-                <InputDetailInfoTag /* onChange={} value={data.tag} */ />
-                <InputDetailInfoComment onChange={onChangecomment} value={data.comment} />
+                <InputDetailInfoDate onChange={onChangeDate} date={data.date} />
+                <InputDetailInfoPrice onChange={onChangePrice} value={data.price} />
+                <InputDetailInfoTag onChange={onChangeTag} value={data.tag} />
+                <InputDetailInfoComment onChange={onChangeComment} value={data.comment} />
             </InputDetailWrap>
             <SubmitButton onClick={() => props.onSubmit(data)} />
         </>
